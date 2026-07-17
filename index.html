@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Aplicação web para analisar a compatibilidade entre candidatos e vagas de tecnologia."
+    >
+
+    <title>SkillMatch Web | Compatibilidade com vagas</title>
+
+    <link
+        rel="stylesheet"
+        href="./assets/styles/index.style.css"
+    >
+</head>
+
+<body>
+    <header>
+        <h1>SkillMatch Web</h1>
+
+        <p>
+            Encontre as vagas mais compatíveis com o seu perfil.
+        </p>
+    </header>
+
+    <main>
+        <section aria-labelledby="titulo-perfil">
+            <h2 id="titulo-perfil">Perfil do candidato</h2>
+        </section>
+
+        <section aria-labelledby="titulo-resultados">
+            <h2 id="titulo-resultados">Resultados</h2>
+
+            <div
+                id="mensagem-status"
+                aria-live="polite"
+            ></div>
+
+            <div id="lista-vagas"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            Projeto avaliativo desenvolvido com HTML, CSS e JavaScript.
+        </p>
+    </footer>
+
+    <script
+        type="module"
+        src="./assets/scripts/main.js"
+    ></script>
+</body>
+</html>
