@@ -1,0 +1,1 @@
+// Funções de fetch e localStorage serão adicionadas aqui.

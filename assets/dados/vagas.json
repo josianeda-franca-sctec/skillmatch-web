@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "empresa": "TechStart",
+        "cargo": "Desenvolvedor Front-End Júnior",
+        "requisitos": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "GitHub"
+        ],
+        "salario": 3500,
+        "modalidade": "Remoto",
+        "nivel": "Júnior"
+    },
+    {
+        "id": 2,
+        "empresa": "CodeLab",
+        "cargo": "Estágio em Desenvolvimento Front-End",
+        "requisitos": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Kanban"
+        ],
+        "salario": 1800,
+        "modalidade": "Híbrido",
+        "nivel": "Estágio"
+    },
+    {
+        "id": 3,
+        "empresa": "WebSolutions",
+        "cargo": "Programador JavaScript Júnior",
+        "requisitos": [
+            "JavaScript",
+            "Arrays",
+            "Objetos",
+            "Funções"
+        ],
+        "salario": 3000,
+        "modalidade": "Presencial",
+        "nivel": "Júnior"
+    },
+    {
+        "id": 4,
+        "empresa": "Digital House",
+        "cargo": "Desenvolvedor de Interfaces Web",
+        "requisitos": [
+            "HTML",
+            "CSS",
+            "Flexbox",
+            "Responsividade"
+        ],
+        "salario": 3200,
+        "modalidade": "Remoto",
+        "nivel": "Júnior"
+    },
+    {
+        "id": 5,
+        "empresa": "Future Systems",
+        "cargo": "Desenvolvedor Front-End Trainee",
+        "requisitos": [
+            "JavaScript",
+            "DOM",
+            "Git",
+            "Lógica de Programação"
+        ],
+        "salario": 2500,
+        "modalidade": "Híbrido",
+        "nivel": "Trainee"
+    }
+]
