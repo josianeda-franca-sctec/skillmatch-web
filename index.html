@@ -10,10 +10,10 @@
 
     <meta
         name="description"
-        content="Aplicação web para analisar a compatibilidade entre candidatos e vagas de tecnologia."
+        content="Aplicação para análise de compatibilidade entre candidatos e vagas."
     >
 
-    <title>SkillMatch Web | Compatibilidade com vagas</title>
+    <title>SkillMatch Web</title>
 
     <link
         rel="stylesheet"
@@ -22,35 +22,128 @@
 </head>
 
 <body>
-    <header>
-        <h1>SkillMatch Web</h1>
+    <header class="cabecalho">
+        <div class="container">
+            <h1>SkillMatch Web</h1>
 
-        <p>
-            Encontre as vagas mais compatíveis com o seu perfil.
-        </p>
+            <p>
+                Descubra quais vagas combinam melhor com suas habilidades.
+            </p>
+        </div>
     </header>
 
-    <main>
-        <section aria-labelledby="titulo-perfil">
-            <h2 id="titulo-perfil">Perfil do candidato</h2>
+    <main class="conteudo-principal">
+        <section
+            class="secao-formulario container"
+            aria-labelledby="titulo-formulario"
+        >
+            <h2 id="titulo-formulario">
+                Dados do candidato
+            </h2>
+
+            <form id="formulario-candidato">
+                <div class="campo-formulario">
+                    <label for="nome">
+                        Nome
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite seu nome"
+                        required
+                    >
+                </div>
+
+                <div class="campo-formulario">
+                    <label for="habilidades">
+                        Habilidades
+                    </label>
+
+                    <input
+                        type="text"
+                        id="habilidades"
+                        name="habilidades"
+                        placeholder="Ex.: HTML, CSS, JavaScript"
+                        required
+                    >
+
+                    <small>
+                        Separe as habilidades por vírgulas.
+                    </small>
+                </div>
+
+                <div class="campo-formulario">
+                    <label for="nivel">
+                        Nível profissional
+                    </label>
+
+                    <select
+                        id="nivel"
+                        name="nivel"
+                        required
+                    >
+                        <option value="">
+                            Selecione uma opção
+                        </option>
+
+                        <option value="Estágio">
+                            Estágio
+                        </option>
+
+                        <option value="Trainee">
+                            Trainee
+                        </option>
+
+                        <option value="Júnior">
+                            Júnior
+                        </option>
+
+                        <option value="Pleno">
+                            Pleno
+                        </option>
+
+                        <option value="Sênior">
+                            Sênior
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit">
+                    Analisar compatibilidade
+                </button>
+            </form>
+
+            <p
+                id="mensagem"
+                role="status"
+                aria-live="polite"
+            ></p>
         </section>
 
-        <section aria-labelledby="titulo-resultados">
-            <h2 id="titulo-resultados">Resultados</h2>
+        <section
+            class="secao-resultados container"
+            aria-labelledby="titulo-resultados"
+        >
+            <h2 id="titulo-resultados">
+                Vagas recomendadas
+            </h2>
 
-            <div
-                id="mensagem-status"
-                aria-live="polite"
-            ></div>
-
-            <div id="lista-vagas"></div>
+            <div id="lista-vagas">
+                <p>
+                    Preencha o formulário para visualizar as recomendações.
+                </p>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <p>
-            Projeto avaliativo desenvolvido com HTML, CSS e JavaScript.
-        </p>
+    <footer class="rodape">
+        <div class="container">
+            <p>
+                SkillMatch Web — Projeto desenvolvido com HTML, CSS e JavaScript.
+            </p>
+        </div>
     </footer>
 
     <script
