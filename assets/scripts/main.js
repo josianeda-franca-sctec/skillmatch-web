@@ -1,31 +1,30 @@
-import { VagaFrontEnd } from "./motor.js";
+import { carregarVagas } from "./dados.js";
 
-const vagaTeste = new VagaFrontEnd(
-    1,
-    "TechStart",
-    "Desenvolvedor Front-End Júnior",
-    ["HTML", "CSS", "JavaScript", "GitHub"],
-    3500,
-    "Remoto",
-    "Júnior"
-);
+async function iniciarAplicacao() {
+    const vagas = await carregarVagas();
 
-const habilidadesTeste = [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "GitHub"
+    console.log("Vagas carregadas:", vagas);
+    console.log(`Quantidade de vagas: ${vagas.length}`);
+
+    const habilidadesTeste = [
+        "HTML",
+        "CSS",
+        "JavaScript"
     ];
 
-const percentual = vagaTeste.calcularCompatibilidade(
-    habilidadesTeste
-);
+    vagas.forEach((vaga) => {
+        const percentual = vaga.calcularCompatibilidade(
+            habilidadesTeste
+        );
 
-const classificacao = vagaTeste.classificarCompatibilidade(
-    percentual
-);
+        const classificacao = vaga.classificarCompatibilidade(
+            percentual
+        );
 
-console.log(vagaTeste);
-console.log(vagaTeste.apresentarResumo());
-console.log(`Compatibilidade: ${percentual}%`);
-console.log(`Classificação: ${classificacao}`);
+        console.log(vaga.apresentarResumo());
+        console.log(`Compatibilidade: ${percentual}%`);
+        console.log(`Classificação: ${classificacao}`);
+    });
+}
+
+iniciarAplicacao();
