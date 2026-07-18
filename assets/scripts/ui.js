@@ -1,80 +1,126 @@
 export function prepararHabilidades(valor) {
-  return valor
-    .split(",")
-    .map((habilidade) => habilidade.trim())
-    .filter((habilidade) => habilidade !== "");
+    return valor
+        .split(",")
+        .map((habilidade) => habilidade.trim())
+        .filter((habilidade) => habilidade !== "");
 }
 
 export function exibirMensagem(elemento, texto) {
-  elemento.textContent = texto;
+    elemento.textContent = texto;
 }
 
 export function exibirVagas(elemento, resultados) {
-  elemento.innerHTML = "";
+    elemento.innerHTML = "";
 
-  if (resultados.length === 0) {
-    elemento.innerHTML = `
-            <p>
-                Nenhuma vaga foi encontrada.
-            </p>
-        `;
+    if (resultados.length === 0) {
+        const mensagem = document.createElement("p");
 
-    return;
-  }
+        mensagem.textContent =
+            "Nenhuma vaga foi encontrada.";
 
-  resultados.forEach((resultado) => {
-    const artigo = document.createElement("article");
+        elemento.appendChild(mensagem);
 
-    artigo.classList.add("cartao-vaga");
-    if (resultado.percentual >= 75) {
-      artigo.classList.add("compatibilidade-alta");
-    } else if (resultado.percentual >= 50) {
-      artigo.classList.add("compatibilidade-media");
-    } else {
-      artigo.classList.add("compatibilidade-baixa");
+        return;
     }
-    
-    artigo.innerHTML = `
-            <h3>${resultado.vaga.cargo}</h3>
 
-            <p>
-                <strong>Empresa:</strong>
-                ${resultado.vaga.empresa}
-            </p>
+    resultados.forEach((resultado, indice) => {
+        const artigo = document.createElement("article");
 
-            <p>
-                <strong>Modalidade:</strong>
-                ${resultado.vaga.modalidade}
-            </p>
+        artigo.classList.add("cartao-vaga");
 
-            <p>
-                <strong>Nível:</strong>
-                ${resultado.vaga.nivel}
-            </p>
+        if (resultado.percentual >= 75) {
+            artigo.classList.add(
+                "compatibilidade-alta"
+            );
+        } else if (resultado.percentual >= 50) {
+            artigo.classList.add(
+                "compatibilidade-media"
+            );
+        } else {
+            artigo.classList.add(
+                "compatibilidade-baixa"
+            );
+        }
 
-            <p>
-                <strong>Salário:</strong>
-                R$ ${Number(resultado.vaga.salario).toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                })}
-            </p>
+        const idTitulo = `vaga-${resultado.vaga.id}-${indice}`;
 
-            <p>
-                <strong>Requisitos:</strong>
-                ${resultado.vaga.requisitos.join(", ")}
-            </p>
+        artigo.setAttribute(
+            "aria-labelledby",
+            idTitulo
+        );
 
-            <p>
-                <strong>Compatibilidade:</strong>
-                ${resultado.percentual}%
-            </p>
+        const titulo = document.createElement("h3");
 
-            <p>
-                <strong>Classificação:</strong>
-                ${resultado.classificacao}
-            </p>
-        `;
+        titulo.id = idTitulo;
+        titulo.textContent = resultado.vaga.cargo;
 
-    elemento.appendChild(artigo);
-  });
+        const empresa = criarParagrafo(
+            "Empresa",
+            resultado.vaga.empresa
+        );
+
+        const modalidade = criarParagrafo(
+            "Modalidade",
+            resultado.vaga.modalidade
+        );
+
+        const nivel = criarParagrafo(
+            "Nível",
+            resultado.vaga.nivel
+        );
+
+        const salarioFormatado = Number(
+            resultado.vaga.salario
+        ).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+
+        const salario = criarParagrafo(
+            "Salário",
+            salarioFormatado
+        );
+
+        const requisitos = criarParagrafo(
+            "Requisitos",
+            resultado.vaga.requisitos.join(", ")
+        );
+
+        const compatibilidade = criarParagrafo(
+            "Compatibilidade",
+            `${resultado.percentual}%`
+        );
+
+        const classificacao = criarParagrafo(
+            "Classificação",
+            resultado.classificacao
+        );
+
+        artigo.append(
+            titulo,
+            empresa,
+            modalidade,
+            nivel,
+            salario,
+            requisitos,
+            compatibilidade,
+            classificacao
+        );
+
+        elemento.appendChild(artigo);
+    });
+}
+
+function criarParagrafo(rotulo, valor) {
+    const paragrafo = document.createElement("p");
+    const destaque = document.createElement("strong");
+
+    destaque.textContent = `${rotulo}: `;
+
+    paragrafo.append(
+        destaque,
+        document.createTextNode(valor)
+    );
+
+    return paragrafo;
 }
