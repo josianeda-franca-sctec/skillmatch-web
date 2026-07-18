@@ -12,12 +12,18 @@ import {
 
 function definirErro(campo, elementoErro, mensagem) {
     campo.setAttribute("aria-invalid", "true");
-    elementoErro.textContent = mensagem;
+
+    if (elementoErro) {
+        elementoErro.textContent = mensagem;
+    }
 }
 
 function limparErro(campo, elementoErro) {
     campo.removeAttribute("aria-invalid");
-    elementoErro.textContent = "";
+
+    if (elementoErro) {
+        elementoErro.textContent = "";
+    }
 }
 
 async function iniciarAplicacao() {
@@ -33,9 +39,9 @@ async function iniciarAplicacao() {
 
     const campoNivel = document.querySelector("#nivel");
 
-    const botaoAnalisar = document.querySelector(
-        "#botao-analisar"
-    );
+    const botaoAnalisar =
+        document.querySelector("#botao-analisar") ||
+        formulario?.querySelector('button[type="submit"]');
 
     const erroNome = document.querySelector("#erro-nome");
 
@@ -46,22 +52,21 @@ async function iniciarAplicacao() {
     const erroNivel = document.querySelector("#erro-nivel");
 
     const mensagem = document.querySelector("#mensagem");
-    const listaVagas = document.querySelector("#lista-vagas");
+
+    const listaVagas = document.querySelector(
+        "#lista-vagas"
+    );
 
     if (
         !formulario ||
         !campoNome ||
         !campoHabilidades ||
         !campoNivel ||
-        !botaoAnalisar ||
-        !erroNome ||
-        !erroHabilidades ||
-        !erroNivel ||
         !mensagem ||
         !listaVagas
     ) {
         console.error(
-            "Não foi possível encontrar os elementos da interface."
+            "Não foi possível encontrar os elementos principais da interface."
         );
 
         return;
@@ -78,8 +83,10 @@ async function iniciarAplicacao() {
         campoNivel.value = candidatoSalvo.nivel ?? "";
     }
 
-    botaoAnalisar.disabled = true;
-    botaoAnalisar.textContent = "Carregando vagas...";
+    if (botaoAnalisar) {
+        botaoAnalisar.disabled = true;
+        botaoAnalisar.textContent = "Carregando vagas...";
+    }
 
     listaVagas.setAttribute("aria-busy", "true");
 
@@ -87,8 +94,12 @@ async function iniciarAplicacao() {
 
     listaVagas.setAttribute("aria-busy", "false");
 
-    botaoAnalisar.disabled = false;
-    botaoAnalisar.textContent = "Analisar compatibilidade";
+    if (botaoAnalisar) {
+        botaoAnalisar.disabled = false;
+
+        botaoAnalisar.textContent =
+            "Analisar compatibilidade";
+    }
 
     if (vagas.length === 0) {
         exibirMensagem(
@@ -96,7 +107,9 @@ async function iniciarAplicacao() {
             "Não foi possível carregar as vagas. Tente atualizar a página."
         );
 
-        botaoAnalisar.disabled = true;
+        if (botaoAnalisar) {
+            botaoAnalisar.disabled = true;
+        }
 
         return;
     }
@@ -252,12 +265,16 @@ async function iniciarAplicacao() {
 
         listaVagas.setAttribute("aria-busy", "false");
 
-        document
-            .querySelector("#titulo-resultados")
-            .scrollIntoView({
+        const tituloResultados = document.querySelector(
+            "#titulo-resultados"
+        );
+
+        if (tituloResultados) {
+            tituloResultados.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
+        }
     });
 }
 
