@@ -38,24 +38,32 @@ export async function carregarVagas() {
 }
 
 export function salvarCandidato(candidato) {
-    const candidatoConvertido = JSON.stringify(candidato);
+    try {
+        const candidatoConvertido =
+            JSON.stringify(candidato);
 
-    localStorage.setItem(
-        CHAVE_CANDIDATO,
-        candidatoConvertido
-    );
+        localStorage.setItem(
+            CHAVE_CANDIDATO,
+            candidatoConvertido
+        );
+    } catch (erro) {
+        console.error(
+            "Não foi possível salvar os dados do candidato.",
+            erro
+        );
+    }
 }
 
 export function recuperarCandidato() {
-    const candidatoSalvo = localStorage.getItem(
-        CHAVE_CANDIDATO
-    );
-
-    if (candidatoSalvo === null) {
-        return null;
-    }
-
     try {
+        const candidatoSalvo = localStorage.getItem(
+            CHAVE_CANDIDATO
+        );
+
+        if (candidatoSalvo === null) {
+            return null;
+        }
+
         return JSON.parse(candidatoSalvo);
     } catch (erro) {
         console.error(
