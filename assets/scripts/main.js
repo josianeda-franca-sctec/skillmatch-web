@@ -1,281 +1,528 @@
 import {
     carregarVagas,
     salvarCandidato,
-    recuperarCandidato
+    recuperarCandidato,
+    limparCandidato
 } from "./dados.js";
+
+import {
+    criarContadorDeAnalises
+} from "./motor.js";
 
 import {
     prepararHabilidades,
     exibirMensagem,
+    exibirPerfil,
+    exibirMelhorVaga,
     exibirVagas
 } from "./ui.js";
 
-function definirErro(campo, elementoErro, mensagem) {
-    campo.setAttribute("aria-invalid", "true");
+const formulario =
+    document.querySelector("#formulario-candidato");
 
-    if (elementoErro) {
-        elementoErro.textContent = mensagem;
-    }
+const campoNome =
+    document.querySelector("#nome");
+
+const campoArea =
+    document.querySelector("#area");
+
+const campoHabilidades =
+    document.querySelector("#habilidades");
+
+const campoExperiencia =
+    document.querySelector("#experiencia-meses");
+
+const campoNivel =
+    document.querySelector("#nivel");
+
+const botaoAnalisar =
+    document.querySelector("#botao-analisar");
+
+const botaoLimpar =
+    document.querySelector("#botao-limpar");
+
+const mensagem =
+    document.querySelector("#mensagem");
+
+const resumoCandidato =
+    document.querySelector("#resumo-candidato");
+
+const melhorVaga =
+    document.querySelector("#melhor-vaga");
+
+const listaVagas =
+    document.querySelector("#lista-vagas");
+
+const erroNome =
+    document.querySelector("#erro-nome");
+
+const erroArea =
+    document.querySelector("#erro-area");
+
+const erroHabilidades =
+    document.querySelector("#erro-habilidades");
+
+const erroExperiencia =
+    document.querySelector("#erro-experiencia");
+
+const erroNivel =
+    document.querySelector("#erro-nivel");
+
+const registrarAnalise =
+    criarContadorDeAnalises();
+
+let vagas = [];
+
+function definirErro(
+    campo,
+    elementoErro,
+    texto
+) {
+    campo.setAttribute(
+        "aria-invalid",
+        "true"
+    );
+
+    campo.classList.add("campo-invalido");
+    elementoErro.textContent = texto;
 }
 
-function limparErro(campo, elementoErro) {
+function limparErro(
+    campo,
+    elementoErro
+) {
     campo.removeAttribute("aria-invalid");
+    campo.classList.remove("campo-invalido");
 
-    if (elementoErro) {
-        elementoErro.textContent = "";
-    }
+    elementoErro.textContent = "";
 }
 
-async function iniciarAplicacao() {
-    const formulario = document.querySelector(
-        "#formulario-candidato"
+function limparTodosOsErros() {
+    limparErro(campoNome, erroNome);
+    limparErro(campoArea, erroArea);
+
+    limparErro(
+        campoHabilidades,
+        erroHabilidades
     );
 
-    const campoNome = document.querySelector("#nome");
-
-    const campoHabilidades = document.querySelector(
-        "#habilidades"
+    limparErro(
+        campoExperiencia,
+        erroExperiencia
     );
 
-    const campoNivel = document.querySelector("#nivel");
+    limparErro(campoNivel, erroNivel);
+}
 
-    const botaoAnalisar =
-        document.querySelector("#botao-analisar") ||
-        formulario?.querySelector('button[type="submit"]');
+function validarFormulario() {
+    limparTodosOsErros();
 
-    const erroNome = document.querySelector("#erro-nome");
+    const nome = campoNome.value.trim();
+    const area = campoArea.value;
 
-    const erroHabilidades = document.querySelector(
-        "#erro-habilidades"
-    );
-
-    const erroNivel = document.querySelector("#erro-nivel");
-
-    const mensagem = document.querySelector("#mensagem");
-
-    const listaVagas = document.querySelector(
-        "#lista-vagas"
-    );
-
-    if (
-        !formulario ||
-        !campoNome ||
-        !campoHabilidades ||
-        !campoNivel ||
-        !mensagem ||
-        !listaVagas
-    ) {
-        console.error(
-            "Não foi possível encontrar os elementos principais da interface."
-        );
-
-        return;
-    }
-
-    const candidatoSalvo = recuperarCandidato();
-
-    if (candidatoSalvo !== null) {
-        campoNome.value = candidatoSalvo.nome ?? "";
-
-        campoHabilidades.value =
-            candidatoSalvo.habilidades?.join(", ") ?? "";
-
-        campoNivel.value = candidatoSalvo.nivel ?? "";
-    }
-
-    if (botaoAnalisar) {
-        botaoAnalisar.disabled = true;
-        botaoAnalisar.textContent = "Carregando vagas...";
-    }
-
-    listaVagas.setAttribute("aria-busy", "true");
-
-    const vagas = await carregarVagas();
-
-    listaVagas.setAttribute("aria-busy", "false");
-
-    if (botaoAnalisar) {
-        botaoAnalisar.disabled = false;
-
-        botaoAnalisar.textContent =
-            "Analisar compatibilidade";
-    }
-
-    if (vagas.length === 0) {
-        exibirMensagem(
-            mensagem,
-            "Não foi possível carregar as vagas. Tente atualizar a página."
-        );
-
-        if (botaoAnalisar) {
-            botaoAnalisar.disabled = true;
-        }
-
-        return;
-    }
-
-    campoNome.addEventListener("input", () => {
-        limparErro(campoNome, erroNome);
-    });
-
-    campoHabilidades.addEventListener("input", () => {
-        limparErro(
-            campoHabilidades,
-            erroHabilidades
-        );
-    });
-
-    campoNivel.addEventListener("change", () => {
-        limparErro(campoNivel, erroNivel);
-    });
-
-    formulario.addEventListener("submit", (evento) => {
-        evento.preventDefault();
-
-        limparErro(campoNome, erroNome);
-
-        limparErro(
-            campoHabilidades,
-            erroHabilidades
-        );
-
-        limparErro(campoNivel, erroNivel);
-
-        exibirMensagem(mensagem, "");
-
-        const nome = campoNome.value.trim();
-
-        const habilidades = prepararHabilidades(
+    const habilidades =
+        prepararHabilidades(
             campoHabilidades.value
         );
 
-        const nivel = campoNivel.value;
+    const experienciaInformada =
+        campoExperiencia.value.trim();
 
-        let formularioValido = true;
-        let primeiroCampoInvalido = null;
+    const experienciaMeses =
+        Number(experienciaInformada);
 
-        if (nome === "") {
-            definirErro(
-                campoNome,
-                erroNome,
-                "Informe o nome do candidato."
+    const nivel = campoNivel.value;
+
+    let formularioValido = true;
+    let primeiroCampoInvalido = null;
+
+    if (!nome) {
+        definirErro(
+            campoNome,
+            erroNome,
+            "Informe o nome do candidato."
+        );
+
+        primeiroCampoInvalido ??= campoNome;
+        formularioValido = false;
+    }
+
+    if (!area) {
+        definirErro(
+            campoArea,
+            erroArea,
+            "Selecione a área de interesse."
+        );
+
+        primeiroCampoInvalido ??= campoArea;
+        formularioValido = false;
+    }
+
+    if (habilidades.length === 0) {
+        definirErro(
+            campoHabilidades,
+            erroHabilidades,
+            "Informe pelo menos uma habilidade."
+        );
+
+        primeiroCampoInvalido ??=
+            campoHabilidades;
+
+        formularioValido = false;
+    }
+
+    if (
+        experienciaInformada === "" ||
+        !Number.isInteger(experienciaMeses) ||
+        experienciaMeses < 0
+    ) {
+        definirErro(
+            campoExperiencia,
+            erroExperiencia,
+            "Informe uma quantidade válida de meses."
+        );
+
+        primeiroCampoInvalido ??=
+            campoExperiencia;
+
+        formularioValido = false;
+    }
+
+    if (!nivel) {
+        definirErro(
+            campoNivel,
+            erroNivel,
+            "Selecione o nível profissional."
+        );
+
+        primeiroCampoInvalido ??= campoNivel;
+        formularioValido = false;
+    }
+
+    if (!formularioValido) {
+        exibirMensagem(
+            mensagem,
+            "Revise os campos indicados antes de continuar."
+        );
+
+        primeiroCampoInvalido.focus();
+    }
+
+    return formularioValido;
+}
+
+function criarCandidato() {
+    return {
+        nome: campoNome.value.trim(),
+        area: campoArea.value,
+        habilidades: prepararHabilidades(
+            campoHabilidades.value
+        ),
+        experienciaMeses: Number(
+            campoExperiencia.value
+        ),
+        nivel: campoNivel.value
+    };
+}
+
+function restaurarCandidato() {
+    const candidatoSalvo =
+        recuperarCandidato();
+
+    if (!candidatoSalvo) {
+        return;
+    }
+
+    campoNome.value =
+        candidatoSalvo.nome ?? "";
+
+    campoArea.value =
+        candidatoSalvo.area ?? "";
+
+    campoHabilidades.value =
+        Array.isArray(candidatoSalvo.habilidades)
+            ? candidatoSalvo.habilidades.join(", ")
+            : "";
+
+    campoExperiencia.value =
+        candidatoSalvo.experienciaMeses ?? "";
+
+    campoNivel.value =
+        candidatoSalvo.nivel ?? "";
+}
+
+function processarVagas(habilidades) {
+    return vagas.map((vaga) => {
+        const compatibilidade =
+            vaga.calcularCompatibilidade(
+                habilidades
             );
 
-            primeiroCampoInvalido = campoNome;
-            formularioValido = false;
-        }
-
-        if (habilidades.length === 0) {
-            definirErro(
-                campoHabilidades,
-                erroHabilidades,
-                "Informe pelo menos uma habilidade."
-            );
-
-            if (primeiroCampoInvalido === null) {
-                primeiroCampoInvalido =
-                    campoHabilidades;
-            }
-
-            formularioValido = false;
-        }
-
-        if (nivel === "") {
-            definirErro(
-                campoNivel,
-                erroNivel,
-                "Selecione o nível profissional."
-            );
-
-            if (primeiroCampoInvalido === null) {
-                primeiroCampoInvalido = campoNivel;
-            }
-
-            formularioValido = false;
-        }
-
-        if (!formularioValido) {
-            exibirMensagem(
-                mensagem,
-                "Revise os campos destacados antes de continuar."
-            );
-
-            primeiroCampoInvalido.focus();
-
-            return;
-        }
-
-        const candidato = {
-            nome,
-            habilidades,
-            nivel
+        return {
+            vaga,
+            percentual:
+                compatibilidade.percentual,
+            encontradas:
+                compatibilidade.encontradas,
+            faltantes:
+                compatibilidade.faltantes,
+            classificacao:
+                vaga.classificarCompatibilidade(
+                    compatibilidade.percentual
+                )
         };
+    });
+}
 
-        salvarCandidato(candidato);
+function encontrarMelhorVaga(resultados) {
+    if (resultados.length === 0) {
+        return null;
+    }
 
-        const resultados = vagas
-            .map((vaga) => {
-                const percentual =
-                    vaga.calcularCompatibilidade(
-                        habilidades
-                    );
+    return resultados.reduce(
+        (melhorResultado, resultadoAtual) => {
+            if (
+                resultadoAtual.percentual >
+                melhorResultado.percentual
+            ) {
+                return resultadoAtual;
+            }
 
-                const classificacao =
-                    vaga.classificarCompatibilidade(
-                        percentual
-                    );
+            return melhorResultado;
+        }
+    );
+}
 
-                return {
-                    vaga,
-                    percentual,
-                    classificacao
-                };
-            })
-            .sort((resultadoA, resultadoB) => {
+function ordenarResultados(resultados) {
+    return [...resultados].sort(
+        (resultadoA, resultadoB) => {
+            if (
+                resultadoB.percentual !==
+                resultadoA.percentual
+            ) {
                 return (
                     resultadoB.percentual -
                     resultadoA.percentual
                 );
-            });
+            }
 
-        const vagasCompativeis = resultados.filter(
-            (resultado) => resultado.percentual > 0
+            return resultadoB.vaga.salario -
+                resultadoA.vaga.salario;
+        }
+    );
+}
+
+function redefinirResultados() {
+    resumoCandidato.innerHTML = "";
+    resumoCandidato.hidden = true;
+
+    melhorVaga.innerHTML = "";
+    melhorVaga.hidden = true;
+
+    listaVagas.innerHTML = "";
+
+    const estadoInicial =
+        document.createElement("p");
+
+    estadoInicial.classList.add(
+        "estado-inicial"
+    );
+
+    estadoInicial.textContent =
+        "Preencha o formulário para visualizar as recomendações.";
+
+    listaVagas.appendChild(estadoInicial);
+}
+
+function limparDadosDaTela() {
+    limparCandidato();
+    formulario.reset();
+    limparTodosOsErros();
+    redefinirResultados();
+
+    exibirMensagem(
+        mensagem,
+        "Dados removidos com sucesso."
+    );
+
+    campoNome.focus();
+}
+
+async function inicializarAplicacao() {
+    botaoAnalisar.disabled = true;
+    botaoLimpar.disabled = true;
+
+    botaoAnalisar.textContent =
+        "Carregando vagas...";
+
+    exibirMensagem(
+        mensagem,
+        "Carregando vagas..."
+    );
+
+    try {
+        vagas = await carregarVagas();
+
+        restaurarCandidato();
+
+        if (vagas.length === 0) {
+            exibirMensagem(
+                mensagem,
+                "Nenhuma vaga disponível."
+            );
+
+            listaVagas.innerHTML = "";
+
+            const estadoVazio =
+                document.createElement("p");
+
+            estadoVazio.classList.add(
+                "estado-inicial"
+            );
+
+            estadoVazio.textContent =
+                "Nenhuma vaga disponível.";
+
+            listaVagas.appendChild(estadoVazio);
+
+            botaoAnalisar.textContent =
+                "Nenhuma vaga disponível";
+
+            return;
+        }
+
+        exibirMensagem(
+            mensagem,
+            "Vagas carregadas com sucesso."
         );
 
-        if (vagasCompativeis.length === 0) {
-            exibirMensagem(
-                mensagem,
-                `${nome}, nenhuma vaga compatível foi encontrada para as habilidades informadas.`
+        botaoAnalisar.textContent =
+            "Analisar compatibilidade";
+    } catch (erro) {
+        console.error(erro);
+
+        exibirMensagem(
+            mensagem,
+            "Não foi possível carregar as vagas. Execute o projeto pelo Live Server e tente novamente."
+        );
+
+        botaoAnalisar.textContent =
+            "Erro ao carregar vagas";
+    } finally {
+        botaoAnalisar.disabled =
+            vagas.length === 0;
+
+        botaoLimpar.disabled = false;
+    }
+}
+
+formulario.addEventListener(
+    "submit",
+    (evento) => {
+        evento.preventDefault();
+
+        exibirMensagem(mensagem, "");
+
+        if (!validarFormulario()) {
+            return;
+        }
+
+        const candidato = criarCandidato();
+
+        salvarCandidato(candidato);
+
+        const resultados =
+            processarVagas(
+                candidato.habilidades
             );
-        } else if (vagasCompativeis.length === 1) {
+
+        const melhorResultado =
+            encontrarMelhorVaga(resultados);
+
+        const resultadosOrdenados =
+            ordenarResultados(resultados);
+
+        exibirPerfil(
+            resumoCandidato,
+            candidato
+        );
+
+        exibirMelhorVaga(
+            melhorVaga,
+            melhorResultado
+        );
+
+        exibirVagas(
+            listaVagas,
+            resultadosOrdenados,
+            melhorResultado?.vaga.id
+        );
+
+        const numeroDaAnalise =
+            registrarAnalise();
+
+        if (
+            melhorResultado &&
+            melhorResultado.percentual > 0
+        ) {
             exibirMensagem(
                 mensagem,
-                `${nome}, encontramos 1 vaga com alguma compatibilidade.`
+                `Análise concluída para ${candidato.nome}. Esta é a análise número ${numeroDaAnalise} da sessão.`
             );
         } else {
             exibirMensagem(
                 mensagem,
-                `${nome}, encontramos ${vagasCompativeis.length} vagas com alguma compatibilidade.`
+                `Nenhuma vaga compatível foi encontrada. Esta é a análise número ${numeroDaAnalise} da sessão.`
             );
         }
 
-        listaVagas.setAttribute("aria-busy", "true");
+        listaVagas.focus();
+    }
+);
 
-        exibirVagas(listaVagas, resultados);
+botaoLimpar.addEventListener(
+    "click",
+    limparDadosDaTela
+);
 
-        listaVagas.setAttribute("aria-busy", "false");
+campoNome.addEventListener(
+    "input",
+    () => limparErro(
+        campoNome,
+        erroNome
+    )
+);
 
-        const tituloResultados = document.querySelector(
-            "#titulo-resultados"
-        );
+campoArea.addEventListener(
+    "change",
+    () => limparErro(
+        campoArea,
+        erroArea
+    )
+);
 
-        if (tituloResultados) {
-            tituloResultados.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-    });
-}
+campoHabilidades.addEventListener(
+    "input",
+    () => limparErro(
+        campoHabilidades,
+        erroHabilidades
+    )
+);
 
-iniciarAplicacao();
+campoExperiencia.addEventListener(
+    "input",
+    () => limparErro(
+        campoExperiencia,
+        erroExperiencia
+    )
+);
+
+campoNivel.addEventListener(
+    "change",
+    () => limparErro(
+        campoNivel,
+        erroNivel
+    )
+);
+
+inicializarAplicacao();

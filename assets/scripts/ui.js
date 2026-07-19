@@ -9,14 +9,122 @@ export function exibirMensagem(elemento, texto) {
     elemento.textContent = texto;
 }
 
-export function exibirVagas(elemento, resultados) {
+export function exibirPerfil(
+    elemento,
+    candidato
+) {
+    elemento.innerHTML = "";
+    elemento.hidden = false;
+
+    const titulo = document.createElement("h3");
+
+    titulo.textContent = "Perfil analisado";
+
+    const nome = criarParagrafo(
+        "Nome",
+        candidato.nome
+    );
+
+    const area = criarParagrafo(
+        "Área",
+        candidato.area
+    );
+
+    const experiencia = criarParagrafo(
+        "Experiência",
+        formatarExperiencia(candidato.experienciaMeses)
+    );
+
+    const nivel = criarParagrafo(
+        "Nível",
+        candidato.nivel
+    );
+
+    const habilidades = criarParagrafo(
+        "Habilidades",
+        candidato.habilidades.join(", ")
+    );
+
+    elemento.append(
+        titulo,
+        nome,
+        area,
+        experiencia,
+        nivel,
+        habilidades
+    );
+}
+
+export function exibirMelhorVaga(
+    elemento,
+    melhorResultado
+) {
+    elemento.innerHTML = "";
+
+    if (!melhorResultado) {
+        elemento.hidden = true;
+        return;
+    }
+
+    elemento.hidden = false;
+
+    const titulo = document.createElement("h3");
+
+    titulo.textContent = "Melhor vaga encontrada";
+
+    const descricao = document.createElement("p");
+
+    descricao.textContent =
+        melhorResultado.vaga.obterDescricao();
+
+    const percentual = criarParagrafo(
+        "Compatibilidade",
+        `${melhorResultado.percentual}%`
+    );
+
+    const recomendacao = document.createElement("p");
+    const destaque = document.createElement("strong");
+
+    destaque.textContent = "Recomendação de estudo: ";
+
+    recomendacao.appendChild(destaque);
+
+    if (melhorResultado.faltantes.length === 0) {
+        recomendacao.append(
+            document.createTextNode(
+                "Seu perfil atende a todos os requisitos desta vaga. Continue praticando e desenvolvendo projetos."
+            )
+        );
+    } else {
+        recomendacao.append(
+            document.createTextNode(
+                `Priorize ${melhorResultado.faltantes.join(
+                    ", "
+                )} para aumentar sua compatibilidade.`
+            )
+        );
+    }
+
+    elemento.append(
+        titulo,
+        descricao,
+        percentual,
+        recomendacao
+    );
+}
+
+export function exibirVagas(
+    elemento,
+    resultados,
+    idMelhorVaga
+) {
     elemento.innerHTML = "";
 
     if (resultados.length === 0) {
         const mensagem = document.createElement("p");
 
-        mensagem.textContent =
-            "Nenhuma vaga foi encontrada.";
+        mensagem.classList.add("estado-inicial");
+        mensagem.textContent = "Nada encontrado.";
 
         elemento.appendChild(mensagem);
 
@@ -28,21 +136,17 @@ export function exibirVagas(elemento, resultados) {
 
         artigo.classList.add("cartao-vaga");
 
-        if (resultado.percentual >= 75) {
-            artigo.classList.add(
-                "compatibilidade-alta"
-            );
-        } else if (resultado.percentual >= 50) {
-            artigo.classList.add(
-                "compatibilidade-media"
-            );
-        } else {
-            artigo.classList.add(
-                "compatibilidade-baixa"
-            );
+        if (resultado.vaga.id === idMelhorVaga) {
+            artigo.classList.add("cartao-melhor-vaga");
         }
 
-        const idTitulo = `vaga-${resultado.vaga.id}-${indice}`;
+        adicionarClasseCompatibilidade(
+            artigo,
+            resultado.percentual
+        );
+
+        const idTitulo =
+            `vaga-${resultado.vaga.id}-${indice}`;
 
         artigo.setAttribute(
             "aria-labelledby",
@@ -53,6 +157,15 @@ export function exibirVagas(elemento, resultados) {
 
         titulo.id = idTitulo;
         titulo.textContent = resultado.vaga.cargo;
+
+        if (resultado.vaga.id === idMelhorVaga) {
+            const selo = document.createElement("span");
+
+            selo.classList.add("selo-melhor-vaga");
+            selo.textContent = "Melhor vaga";
+
+            artigo.appendChild(selo);
+        }
 
         const empresa = criarParagrafo(
             "Empresa",
@@ -69,21 +182,14 @@ export function exibirVagas(elemento, resultados) {
             resultado.vaga.nivel
         );
 
-        const salarioFormatado = Number(
-            resultado.vaga.salario
-        ).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-        });
+        const stack = criarParagrafo(
+            "Stack",
+            resultado.vaga.stack
+        );
 
         const salario = criarParagrafo(
             "Salário",
-            salarioFormatado
-        );
-
-        const requisitos = criarParagrafo(
-            "Requisitos",
-            resultado.vaga.requisitos.join(", ")
+            formatarSalario(resultado.vaga.salario)
         );
 
         const compatibilidade = criarParagrafo(
@@ -91,9 +197,25 @@ export function exibirVagas(elemento, resultados) {
             `${resultado.percentual}%`
         );
 
+        compatibilidade.classList.add(
+            "percentual-compatibilidade"
+        );
+
         const classificacao = criarParagrafo(
             "Classificação",
             resultado.classificacao
+        );
+
+        const encontradas = criarListaHabilidades(
+            "Habilidades encontradas",
+            resultado.encontradas,
+            "Nenhuma habilidade encontrada."
+        );
+
+        const faltantes = criarListaHabilidades(
+            "Habilidades faltantes",
+            resultado.faltantes,
+            "Nenhuma habilidade faltante."
         );
 
         artigo.append(
@@ -101,14 +223,41 @@ export function exibirVagas(elemento, resultados) {
             empresa,
             modalidade,
             nivel,
+            stack,
             salario,
-            requisitos,
             compatibilidade,
-            classificacao
+            classificacao,
+            encontradas,
+            faltantes
         );
 
         elemento.appendChild(artigo);
     });
+}
+
+function adicionarClasseCompatibilidade(
+    elemento,
+    percentual
+) {
+    if (percentual >= 80) {
+        elemento.classList.add(
+            "compatibilidade-alta"
+        );
+
+        return;
+    }
+
+    if (percentual >= 50) {
+        elemento.classList.add(
+            "compatibilidade-media"
+        );
+
+        return;
+    }
+
+    elemento.classList.add(
+        "compatibilidade-baixa"
+    );
 }
 
 function criarParagrafo(rotulo, valor) {
@@ -119,8 +268,69 @@ function criarParagrafo(rotulo, valor) {
 
     paragrafo.append(
         destaque,
-        document.createTextNode(valor)
+        document.createTextNode(String(valor))
     );
 
     return paragrafo;
+}
+
+function criarListaHabilidades(
+    titulo,
+    habilidades,
+    mensagemVazia
+) {
+    const container = document.createElement("div");
+    const subtitulo = document.createElement("h4");
+
+    subtitulo.textContent = titulo;
+
+    container.appendChild(subtitulo);
+
+    if (habilidades.length === 0) {
+        const paragrafo = document.createElement("p");
+
+        paragrafo.textContent = mensagemVazia;
+
+        container.appendChild(paragrafo);
+
+        return container;
+    }
+
+    const lista = document.createElement("ul");
+
+    habilidades.forEach((habilidade) => {
+        const item = document.createElement("li");
+
+        item.textContent = habilidade;
+
+        lista.appendChild(item);
+    });
+
+    container.appendChild(lista);
+
+    return container;
+}
+
+function formatarSalario(valor) {
+    return Number(valor).toLocaleString(
+        "pt-BR",
+        {
+            style: "currency",
+            currency: "BRL"
+        }
+    );
+}
+
+function formatarExperiencia(meses) {
+    const quantidade = Number(meses);
+
+    if (quantidade === 0) {
+        return "Sem experiência profissional";
+    }
+
+    if (quantidade === 1) {
+        return "1 mês";
+    }
+
+    return `${quantidade} meses`;
 }

@@ -10,10 +10,16 @@
 
     <meta
         name="description"
-        content="Aplicação para análise de compatibilidade entre candidatos e vagas."
+        content="Aplicação web que compara as habilidades de candidatos com vagas de tecnologia e apresenta compatibilidade e recomendações de estudo."
     >
 
-    <title>SkillMatch Web</title>
+    <title>SkillMatch Web | Compatibilidade com vagas</title>
+
+    <link
+        rel="icon"
+        href="./assets/img/logo.svg"
+        type="image/svg+xml"
+    >
 
     <link
         rel="stylesheet"
@@ -23,40 +29,71 @@
 
 <body>
     <a
-        class="link-pular-conteudo"
+        class="link-pular"
         href="#conteudo-principal"
     >
         Pular para o conteúdo principal
     </a>
 
     <header class="cabecalho">
-        <div class="container">
-            <h1>SkillMatch Web</h1>
+        <div class="container cabecalho-conteudo">
+            <div class="identidade">
+                <img
+                    src="./assets/img/logo.svg"
+                    alt="Logotipo do SkillMatch, representando a conexão entre habilidades e vagas"
+                    class="logo"
+                    width="96"
+                    height="96"
+                >
 
-            <p>
-                Descubra quais vagas combinam melhor com suas habilidades.
-            </p>
+                <div>
+                    <h1>SkillMatch Web</h1>
+
+                    <p>
+                        Descubra quais vagas combinam melhor com suas
+                        habilidades profissionais.
+                    </p>
+                </div>
+            </div>
+
+            <nav
+                class="navegacao"
+                aria-label="Navegação principal"
+            >
+                <a href="#formulario-candidato">
+                    Perfil
+                </a>
+
+                <a href="#titulo-resultados">
+                    Resultados
+                </a>
+            </nav>
         </div>
     </header>
 
     <main
         id="conteudo-principal"
-        class="conteudo-principal"
+        class="container conteudo-principal"
         tabindex="-1"
     >
         <section
-            class="secao-formulario container"
+            class="secao-formulario"
             aria-labelledby="titulo-formulario"
         >
             <h2 id="titulo-formulario">
-                Dados do candidato
+                Perfil do candidato
             </h2>
+
+            <p>
+                Informe seus dados para comparar seu perfil com as
+                vagas disponíveis.
+            </p>
 
             <form
                 id="formulario-candidato"
                 novalidate
             >
-                <div class="campo-formulario">
+                <div class="grupo-formulario">
                     <label for="nome">
                         Nome
                     </label>
@@ -65,20 +102,58 @@
                         type="text"
                         id="nome"
                         name="nome"
-                        placeholder="Digite seu nome"
                         autocomplete="name"
                         aria-describedby="erro-nome"
                         required
                     >
 
-                    <small
+                    <span
                         id="erro-nome"
                         class="mensagem-erro"
                         aria-live="polite"
-                    ></small>
+                    ></span>
                 </div>
 
-                <div class="campo-formulario">
+                <div class="grupo-formulario">
+                    <label for="area">
+                        Área de interesse
+                    </label>
+
+                    <select
+                        id="area"
+                        name="area"
+                        aria-describedby="erro-area"
+                        required
+                    >
+                        <option value="">
+                            Selecione uma área
+                        </option>
+
+                        <option value="Front-End">
+                            Front-End
+                        </option>
+
+                        <option value="Desenvolvimento Web">
+                            Desenvolvimento Web
+                        </option>
+
+                        <option value="JavaScript">
+                            JavaScript
+                        </option>
+
+                        <option value="Interfaces Web">
+                            Interfaces Web
+                        </option>
+                    </select>
+
+                    <span
+                        id="erro-area"
+                        class="mensagem-erro"
+                        aria-live="polite"
+                    ></span>
+                </div>
+
+                <div class="grupo-formulario">
                     <label for="habilidades">
                         Habilidades
                     </label>
@@ -93,17 +168,45 @@
                     >
 
                     <small id="ajuda-habilidades">
-                        Separe as habilidades por vírgulas.
+                        Separe as habilidades usando vírgulas.
                     </small>
 
-                    <small
+                    <span
                         id="erro-habilidades"
                         class="mensagem-erro"
                         aria-live="polite"
-                    ></small>
+                    ></span>
                 </div>
 
-                <div class="campo-formulario">
+                <div class="grupo-formulario">
+                    <label for="experiencia-meses">
+                        Experiência em meses
+                    </label>
+
+                    <input
+                        type="number"
+                        id="experiencia-meses"
+                        name="experienciaMeses"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="Ex.: 6"
+                        aria-describedby="ajuda-experiencia erro-experiencia"
+                        required
+                    >
+
+                    <small id="ajuda-experiencia">
+                        Digite 0 caso ainda não tenha experiência profissional.
+                    </small>
+
+                    <span
+                        id="erro-experiencia"
+                        class="mensagem-erro"
+                        aria-live="polite"
+                    ></span>
+                </div>
+
+                <div class="grupo-formulario">
                     <label for="nivel">
                         Nível profissional
                     </label>
@@ -115,7 +218,7 @@
                         required
                     >
                         <option value="">
-                            Selecione uma opção
+                            Selecione um nível
                         </option>
 
                         <option value="Estágio">
@@ -139,43 +242,67 @@
                         </option>
                     </select>
 
-                    <small
+                    <span
                         id="erro-nivel"
                         class="mensagem-erro"
                         aria-live="polite"
-                    ></small>
+                    ></span>
                 </div>
 
-                <button
-                    type="submit"
-                    id="botao-analisar"
-                >
-                    Analisar compatibilidade
-                </button>
+                <div class="acoes-formulario">
+                    <button
+                        type="submit"
+                        id="botao-analisar"
+                    >
+                        Analisar compatibilidade
+                    </button>
+
+                    <button
+                        type="button"
+                        id="botao-limpar"
+                    >
+                        Limpar dados
+                    </button>
+                </div>
             </form>
 
-            <p
+            <div
                 id="mensagem"
+                class="mensagem"
                 role="status"
                 aria-live="polite"
-                aria-atomic="true"
-            ></p>
+            ></div>
         </section>
 
         <section
-            class="secao-resultados container"
+            class="secao-resultados"
             aria-labelledby="titulo-resultados"
         >
             <h2 id="titulo-resultados">
-                Vagas recomendadas
+                Resultado da análise
             </h2>
 
             <div
-                id="lista-vagas"
+                id="resumo-candidato"
+                class="resumo-candidato"
                 aria-live="polite"
-                aria-busy="false"
+                hidden
+            ></div>
+
+            <div
+                id="melhor-vaga"
+                class="melhor-vaga"
+                aria-live="polite"
+                hidden
+            ></div>
+
+            <div
+                id="lista-vagas"
+                class="lista-vagas"
+                aria-live="polite"
+                tabindex="-1"
             >
-                <p>
+                <p class="estado-inicial">
                     Preencha o formulário para visualizar as recomendações.
                 </p>
             </div>
@@ -185,7 +312,12 @@
     <footer class="rodape">
         <div class="container">
             <p>
-                SkillMatch Web — Projeto desenvolvido com HTML, CSS e JavaScript.
+                SkillMatch Web — Projeto desenvolvido com HTML, CSS e
+                JavaScript.
+            </p>
+
+            <p>
+                Projeto desenvolvido por Josiane da França.
             </p>
         </div>
     </footer>
@@ -195,4 +327,4 @@
         src="./assets/scripts/main.js"
     ></script>
 </body>
-</html>s
+</html>
