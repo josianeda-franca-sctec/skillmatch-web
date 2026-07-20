@@ -26,32 +26,56 @@ export class Vaga {
     }
 
     calcularCompatibilidade(habilidadesCandidato) {
-        if (!Array.isArray(habilidadesCandidato)) {
-            return 0;
+        if (
+            !Array.isArray(habilidadesCandidato) ||
+            !Array.isArray(this.requisitos) ||
+            this.requisitos.length === 0
+        ) {
+            return {
+                percentual: 0,
+                encontradas: [],
+                faltantes: [...this.requisitos]
+            };
         }
 
-        if (this.requisitos.length === 0) {
-            return 0;
-        }
+        const habilidadesNormalizadas =
+            habilidadesCandidato.map(normalizarTexto);
 
-        const habilidadesNormalizadas = habilidadesCandidato.map(
-            normalizarTexto
+        const encontradas = this.requisitos.filter(
+            (requisito) => {
+                const requisitoNormalizado =
+                    normalizarTexto(requisito);
+
+                return habilidadesNormalizadas.includes(
+                    requisitoNormalizado
+                );
+            }
         );
 
-        const requisitosAtendidos = this.requisitos.filter((requisito) => {
-            const requisitoNormalizado = normalizarTexto(requisito);
+        const faltantes = this.requisitos.filter(
+            (requisito) => {
+                const requisitoNormalizado =
+                    normalizarTexto(requisito);
 
-            return habilidadesNormalizadas.includes(requisitoNormalizado);
-        });
+                return !habilidadesNormalizadas.includes(
+                    requisitoNormalizado
+                );
+            }
+        );
 
-        const percentual =
-            (requisitosAtendidos.length / this.requisitos.length) * 100;
+        const percentual = Math.round(
+            (encontradas.length / this.requisitos.length) * 100
+        );
 
-        return Math.round(percentual);
+        return {
+            percentual,
+            encontradas,
+            faltantes
+        };
     }
 
     classificarCompatibilidade(percentual) {
-        if (percentual >= 75) {
+        if (percentual >= 80) {
             return "Alta compatibilidade";
         }
 
@@ -60,6 +84,10 @@ export class Vaga {
         }
 
         return "Baixa compatibilidade";
+    }
+
+    obterDescricao() {
+        return `${this.cargo} na empresa ${this.empresa}`;
     }
 }
 
@@ -71,7 +99,8 @@ export class VagaFrontEnd extends Vaga {
         requisitos,
         salario,
         modalidade,
-        nivel
+        nivel,
+        stack
     ) {
         super(
             id,
@@ -84,9 +113,24 @@ export class VagaFrontEnd extends Vaga {
         );
 
         this.area = "Front-End";
+        this.stack = stack;
     }
 
-    apresentarResumo() {
-        return `${this.cargo} na empresa ${this.empresa}`;
+    // A subclasse sobrescreve o método para incluir informações
+    // específicas das vagas de Front-End.
+    obterDescricao() {
+        return `${this.cargo} na empresa ${this.empresa}, com foco em ${this.stack}`;
     }
+}
+
+export function criarContadorDeAnalises() {
+    let quantidade = 0;
+
+    // Esta função mantém acesso à variável quantidade,
+    // caracterizando uma closure.
+    return function registrarAnalise() {
+        quantidade += 1;
+
+        return quantidade;
+    };
 }

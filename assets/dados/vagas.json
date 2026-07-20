@@ -11,7 +11,8 @@
         ],
         "salario": 3500,
         "modalidade": "Remoto",
-        "nivel": "Júnior"
+        "nivel": "Júnior",
+        "stack": "HTML, CSS, JavaScript e GitHub"
     },
     {
         "id": 2,
@@ -25,7 +26,8 @@
         ],
         "salario": 1800,
         "modalidade": "Híbrido",
-        "nivel": "Estágio"
+        "nivel": "Estágio",
+        "stack": "HTML, CSS, JavaScript e Kanban"
     },
     {
         "id": 3,
@@ -39,7 +41,8 @@
         ],
         "salario": 3000,
         "modalidade": "Presencial",
-        "nivel": "Júnior"
+        "nivel": "Júnior",
+        "stack": "JavaScript e fundamentos da linguagem"
     },
     {
         "id": 4,
@@ -53,7 +56,8 @@
         ],
         "salario": 3200,
         "modalidade": "Remoto",
-        "nivel": "Júnior"
+        "nivel": "Júnior",
+        "stack": "HTML, CSS, Flexbox e responsividade"
     },
     {
         "id": 5,
@@ -67,6 +71,7 @@
         ],
         "salario": 2500,
         "modalidade": "Híbrido",
-        "nivel": "Trainee"
+        "nivel": "Trainee",
+        "stack": "JavaScript, DOM, Git e lógica"
     }
 ]
