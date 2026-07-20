@@ -116,3 +116,9 @@ Abra o arquivo "index.html" em qualquer navegador, através do Live server.
 - Filtros avançados de vagas
 
 
+# Links importantes
+
+ - Trello: https://trello.com/b/eOg4KNmj/projeto-avaliativo-modulo-1-semana-13
+ - Repositório Github: https://github.com/josianeda-franca-sctec/skillmatch-web.git
+
+
